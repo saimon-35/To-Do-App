@@ -1,19 +1,39 @@
-const BASE_URL = "http://localhost:5000";
+import axios from "axios";
 
-export const getTasks = () => {
-  return fetch(`${BASE_URL}/tasks`).then(res => res.json());
+const API = "http://127.0.0.1:5000";
+
+// 🔑 Get token
+const getToken = () => localStorage.getItem("token");
+
+// ✅ Get tasks
+export const getTasks = async () => {
+  const res = await axios.get(`${API}/tasks`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    }
+  });
+  return res.data;
 };
 
-export const addTask = (title) => {
-  return fetch(`${BASE_URL}/tasks`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title }),
-  }).then(res => res.json());
+// ✅ Add task
+export const addTask = async (title) => {
+  const res = await axios.post(
+    `${API}/tasks`,
+    { title },
+    {
+      headers: {
+        Authorization: `Bearer ${getToken()}`
+      }
+    }
+  );
+  return res.data;
 };
 
-export const deleteTask = (id) => {
-  return fetch(`${BASE_URL}/tasks/${id}`, {
-    method: "DELETE",
+// ✅ Delete task
+export const deleteTask = async (id) => {
+  await axios.delete(`${API}/tasks/${id}`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    }
   });
 };
