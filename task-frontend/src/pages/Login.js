@@ -17,6 +17,7 @@ function Login() {
 
       // ✅ store token
       localStorage.setItem("token", res.data.access_token);
+      localStorage.setItem("refresh_token", res.data.refresh_token);
 
       alert("Login successful");
 

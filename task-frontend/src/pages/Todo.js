@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTasks, addTask, deleteTask } from "../api/tasks";
+import { getTasks, addTask, deleteTask, updateTask } from "../api/tasks";
 import "../styles/todo.css"; // ✅ Import your CSS
 
 function Todo() {
@@ -26,6 +26,15 @@ function Todo() {
       );
     });
   };
+  const handleToggle = (id, completed) => {
+  updateTask(id, completed).then((updatedTask) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? updatedTask : task
+      )
+    );
+  });
+};
 
   return (
     <div className="todo-container">
@@ -45,16 +54,28 @@ function Todo() {
       </div>
 
       <ul id="todo-list">
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <span>{task.title}</span>
+  {tasks.map((task) => (
+    <li
+      key={task.id}
+      onClick={() => handleToggle(task.id, task.completed)}
+      style={{
+        textDecoration: task.completed ? "line-through" : "none",
+        cursor: "pointer",
+      }}
+    >
+      <span>{task.title}</span>
 
-            <button onClick={() => handleDelete(task.id)}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // ❗ prevent toggle when deleting
+          handleDelete(task.id);
+        }}
+      >
+        Delete
+      </button>
+    </li>
+  ))}
+</ul>
     </div>
   );
 }
