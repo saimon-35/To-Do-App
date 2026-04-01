@@ -46,7 +46,7 @@ function App() {
           <div className="spinner"></div>
 
           {serverWakeMessage ? (
-            <p>Server is starting... Please wait (cold start)</p>
+            <p>Please wait</p>
           ) : (
             <p>Loading...</p>
           )}
