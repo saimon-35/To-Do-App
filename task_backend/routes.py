@@ -7,7 +7,7 @@ from flask_jwt_extended import (
     get_jwt_identity,
     create_refresh_token
 )
-
+import time
 bp = Blueprint('main', __name__)
 
 # ---------------- AUTH ---------------- #
@@ -55,7 +55,7 @@ def login():
 
     access_token = create_access_token(str(user.id))
     refresh_token = create_refresh_token(str(user.id))
-
+    time.sleep(8)  # Simulate loading time
     return jsonify({
         "access_token": access_token,
         "refresh_token": refresh_token
