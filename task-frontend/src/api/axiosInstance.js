@@ -6,7 +6,7 @@ const axiosInstance = axios.create({
   baseURL: API
 });
 
-// Request: attach token
+// 🔥 Request: start loader + detect slow request
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
@@ -14,16 +14,32 @@ axiosInstance.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
+  // Start loading event
+  window.dispatchEvent(new Event("api-request-start"));
+
+  // Mark request start time
+  config.metadata = { startTime: new Date() };
+
   return config;
 });
 
-// Response: handle expired token
+// 🔥 Response: stop loader
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    window.dispatchEvent(new Event("api-request-end"));
+    return response;
+  },
   async (error) => {
+    window.dispatchEvent(new Event("api-request-end"));
+
     const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
+    // ⛔ handle cold start + slow request also passes here
+    if (!error.response) {
+      console.log("Server might be sleeping (Render cold start)");
+    }
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const refresh_token = localStorage.getItem("refresh_token");
@@ -43,7 +59,6 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
 
       } catch (err) {
-        // Refresh failed → logout
         localStorage.clear();
         window.location.href = "/login";
       }
