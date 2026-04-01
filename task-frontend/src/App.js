@@ -20,7 +20,7 @@ function App() {
       // 🔥 After 3 seconds → show "server waking up"
       timer = setTimeout(() => {
         setServerWakeMessage(true);
-      }, 3000);
+      }, 12000); // 12 seconds (match backend sleep time + buffer)
     };
 
     const end = () => {
